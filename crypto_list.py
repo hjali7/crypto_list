@@ -5,6 +5,7 @@ import io
 import urllib.request
 import crypto_data
 import time
+from search_module import SearchModule  # وارد کردن ماژول جستجو
 
 class CryptoListApp:
     def __init__(self, root):
@@ -32,13 +33,16 @@ class CryptoListApp:
         for widget in self.root.winfo_children():
             widget.destroy()
 
-        # فریم بالا برای عنوان، انتخاب سرویس و دکمه رفرش
+        # فریم بالا برای عنوان، جستجو، انتخاب سرویس و دکمه رفرش
         top_frame = tk.Frame(self.root)
         top_frame.pack(fill="x", pady=5)
 
         # عنوان
         title_label = ttk.Label(top_frame, text="لیست 100 ارز دیجیتال", font=("Arial", 14, "bold"))
         title_label.pack(side="left", padx=5)
+
+        # اضافه کردن ماژول جستجو
+        self.search_module = SearchModule(top_frame, self.update_list)
 
         # منوی کشویی برای انتخاب سرویس
         self.service_var = tk.StringVar(value=crypto_data.get_current_service())
@@ -92,8 +96,12 @@ class CryptoListApp:
             ttk.Label(self.scrollable_frame, text="خطا در دریافت داده‌ها", font=("Arial", 12)).pack(pady=10)
             return
 
+        # فیلتر کردن بر اساس جستجو
+        search_query = self.search_module.get_search_query()
+        filtered_data = [item for item in data if search_query in item.get('name', '').lower()] if search_query else data
+
         # نمایش لیست ارزها
-        for i, crypto in enumerate(data):
+        for i, crypto in enumerate(filtered_data):
             row_frame = ttk.Frame(self.scrollable_frame)
             row_frame.pack(fill="x", pady=2)
 
@@ -122,7 +130,7 @@ class CryptoListApp:
 
     def start_refresh(self):
         # نمایش طرح به‌روزرسانی
-        self.loading_label = ttk.Label(self.root, text="در حال به‌روزرسانی...", font=("Arial", 14))
+        self.loading_label = ttk.Label(self.root, text="در حال به‌روزسانی...", font=("Arial", 14))
         self.loading_label.place(relx=0.5, rely=0.5, anchor="center")
 
         # غیرفعال کردن دکمه رفرش موقع لودینگ
@@ -144,6 +152,11 @@ class CryptoListApp:
         # حذف طرح به‌روزرسانی و فعال کردن دکمه
         self.loading_label.destroy()
         self.refresh_button.config(state="normal")
+
+    def on_closing(self):
+        # بستن دیتابیس و خروج
+        crypto_data.close_db()
+        self.root.destroy()
 
 def main():
     root = tk.Tk()
