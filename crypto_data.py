@@ -1,4 +1,5 @@
 import requests
+from mongo_database import MongoCryptoDatabase
 from dotenv import load_dotenv
 import os
 
@@ -15,6 +16,7 @@ else:
 
 crypto_data = []
 current_service = "coingecko"  # سرویس پیش‌فرض
+db = MongoCryptoDatabase()  # نمونه از دیتابیس MongoDB
 
 def fetch_and_store_data(service="coingecko"):
     global crypto_data, current_service
@@ -35,7 +37,8 @@ def fetch_and_store_data(service="coingecko"):
             print(f"وضعیت پاسخ CoinGecko: {response.status_code}")
             if response.status_code == 200:
                 crypto_data = response.json()
-                print(f"داده‌ها از CoinGecko دریافت شد. تعداد: {len(crypto_data)}")
+                db.store_data(service, crypto_data)
+                print(f"داده‌ها از CoinGecko دریافت و ذخیره شد. تعداد: {len(crypto_data)}")
                 return True
             else:
                 print(f"خطا در CoinGecko: کد {response.status_code}")
@@ -71,7 +74,8 @@ def fetch_and_store_data(service="coingecko"):
                     }
                     for coin in data
                 ]
-                print(f"داده‌ها از CoinMarketCap دریافت شد. تعداد: {len(crypto_data)}")
+                db.store_data(service, crypto_data)
+                print(f"داده‌ها از CoinMarketCap دریافت و ذخیره شد. تعداد: {len(crypto_data)}")
                 return True
             else:
                 print(f"خطا در CoinMarketCap: کد {response.status_code}")
@@ -87,3 +91,6 @@ def get_crypto_data():
 
 def get_current_service():
     return current_service
+
+def close_db():
+    db.close()
