@@ -3,13 +3,16 @@ import time
 from dotenv import load_dotenv
 import os
 
+# بارگذاری متغیرهای محیطی از فایل .env
 load_dotenv()
 
-
-
 class MongoCryptoDatabase:
-    def __init__(self, connection_string=os.getenv("MONGODB_CONNECTION_STRING")):
-        # جایگزین connection_string با رشته‌ای که از Atlas گرفتی
+    def __init__(self):
+        # خواندن Connection String از متغیر محیطی
+        connection_string = os.getenv("MONGO_CONNECTION_STRING")
+        if not connection_string:
+            raise ValueError("MONGO_CONNECTION_STRING در فایل .env تعریف نشده است!")
+        
         self.client = MongoClient(connection_string)
         self.db = self.client["crypto_db"]
         self.collection = self.db["crypto_data"]
