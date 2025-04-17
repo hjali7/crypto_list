@@ -132,7 +132,7 @@ class CryptoListApp:
         self.root.after(100, self.refresh_data_async)
 
     def refresh_data_async(self):
-        # شبیه‌سازی تاخیر (می‌تونی این خط رو حذف کنی اگه تاخیر واقعی API کافیه)
+        # شبیه‌سازی تاخیر
         time.sleep(1)
 
         # به‌روزرسانی داده‌ها
