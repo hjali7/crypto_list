@@ -34,7 +34,7 @@ class ThemeModule:
         }
         self.style = ttk.Style()
         self.setup_ui()
-        print("ThemeModule initialized")
+        print("ThemeModule initialized with configure_styles and test_module methods")
 
     def setup_ui(self):
         self.theme_button = ttk.Button(
@@ -58,3 +58,6 @@ class ThemeModule:
         self.style.configure("Custom.TLabel", background=theme["bg"], foreground=theme["fg"])
         self.style.configure("Custom.TButton", background=theme["button_bg"], foreground=theme["button_fg"])
         print("Styles configured for theme")
+
+    def test_module(self):
+        print("ThemeModule is correctly loaded with version including test_module")

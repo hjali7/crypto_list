@@ -7,6 +7,7 @@ import crypto_data
 import time
 from search_module import SearchModule
 from theme_module import ThemeModule
+from details_module import DetailsModule
 
 class CryptoListApp:
     def __init__(self, root):
@@ -40,6 +41,7 @@ class CryptoListApp:
 
         self.search_module = SearchModule(self.top_frame, self.update_list)
         self.theme_module = ThemeModule(self.top_frame, self.apply_theme)
+        self.theme_module.test_module()  # تست بارگذاری ماژول
 
         self.service_var = tk.StringVar(value=crypto_data.get_current_service())
         self.service_dropdown = ttk.OptionMenu(
@@ -52,7 +54,7 @@ class CryptoListApp:
         )
         self.service_dropdown.pack(side="right", padx=5)
 
-        self.refresh_button = ttk.Button(self.top_frame, text="Refresh", command=self.start_refresh)
+        self.refresh_button = ttk.Button(self.top_frame, text="Refresh", command=self.start_refresh, style="Custom.TButton")
         self.refresh_button.pack(side="right", padx=5)
 
         self.frame = ttk.Frame(self.root, style="Custom.TFrame")
@@ -88,6 +90,11 @@ class CryptoListApp:
         self.title_label.configure(style="Custom.TLabel")
         self.service_dropdown.configure(style="Custom.TButton")
         self.refresh_button.configure(style="Custom.TButton")
+        print("Theme applied successfully")
+
+    def show_crypto_details(self, crypto):
+        details = DetailsModule(self.root, crypto)
+        details.apply_theme(self.theme_module.get_theme())
 
     def update_list(self):
         for widget in self.scrollable_frame.winfo_children():
@@ -107,18 +114,22 @@ class CryptoListApp:
             row_frame = ttk.Frame(self.scrollable_frame, style="Custom.TFrame")
             row_frame.pack(fill="x", pady=2)
 
+            row_frame.bind("<Button-1>", lambda e, c=crypto: self.show_crypto_details(c))
+
             image_url = crypto.get('image', '')
             photo = self.load_image(image_url)
             if photo:
                 self.images.append(photo)
                 logo_label = ttk.Label(row_frame, image=photo, style="Custom.TLabel")
                 logo_label.pack(side="left", padx=5)
+                logo_label.bind("<Button-1>", lambda e, c=crypto: self.show_crypto_details(c))
 
             name = crypto.get('name', 'N/A')
             price = crypto.get('current_price', 'N/A')
             label_text = f"{name}: ${price:.2f}"
             label = ttk.Label(row_frame, text=label_text, font=("Arial", 12), style="Custom.TLabel")
             label.pack(side="left")
+            label.bind("<Button-1>", lambda e, c=crypto: self.show_crypto_details(c))
 
     def switch_service(self, *args):
         selected_service = self.service_var.get()

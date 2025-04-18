@@ -3,11 +3,9 @@ from mongo_database import MongoCryptoDatabase
 from dotenv import load_dotenv
 import os
 
-# بارگذاری متغیرهای محیطی از فایل .env
 load_dotenv()
 print("بارگذاری فایل .env انجام شد.")
 
-# خواندن کلید API از متغیرهای محیطی
 CMC_API_KEY = os.getenv("CMC_API_KEY")
 if not CMC_API_KEY:
     print("خطا: CMC_API_KEY در فایل .env تعریف نشده است!")
@@ -15,8 +13,8 @@ else:
     print("کلید API CoinMarketCap با موفقیت بارگذاری شد.")
 
 crypto_data = []
-current_service = "coingecko"  # سرویس پیش‌فرض
-db = MongoCryptoDatabase()  # نمونه از دیتابیس MongoDB
+current_service = "coingecko"
+db = MongoCryptoDatabase()
 
 def fetch_and_store_data(service="coingecko"):
     global crypto_data, current_service
@@ -70,7 +68,9 @@ def fetch_and_store_data(service="coingecko"):
                     {
                         'name': coin['name'],
                         'current_price': coin['quote']['USD']['price'],
-                        'image': f"https://s2.coinmarketcap.com/static/img/coins/64x64/{coin['id']}.png"
+                        'image': f"https://s2.coinmarketcap.com/static/img/coins/64x64/{coin['id']}.png",
+                        'price_change_percentage_24h': coin['quote']['USD']['percent_change_24h'],
+                        'total_volume': coin['quote']['USD']['volume_24h']
                     }
                     for coin in data
                 ]
