@@ -4,8 +4,8 @@ from tkinter import ttk
 class ThemeModule:
     def __init__(self, parent, apply_theme_callback):
         self.parent = parent
-        self.apply_theme_callback = apply_theme_callback  # برای فراخوانی apply_theme
-        self.is_dark_mode = True  # حالت پیش‌فرض تیره
+        self.apply_theme_callback = apply_theme_callback
+        self.is_dark_mode = True
         self.themes = {
             "dark": {
                 "bg": "#1C2526",
@@ -32,10 +32,11 @@ class ThemeModule:
                 "special_active": "#C0C0C0"
             }
         }
+        self.style = ttk.Style()
         self.setup_ui()
+        print("ThemeModule initialized")
 
     def setup_ui(self):
-        # دکمه تغییر تم
         self.theme_button = ttk.Button(
             self.parent,
             text="تغییر تم",
@@ -45,31 +46,15 @@ class ThemeModule:
 
     def toggle_theme(self):
         self.is_dark_mode = not self.is_dark_mode
+        print(f"Switching to {'dark' if self.is_dark_mode else 'light'} theme")
         self.apply_theme_callback()
 
     def get_theme(self):
         return self.themes["dark" if self.is_dark_mode else "light"]
 
-    def configure_button(self, button, text):
+    def configure_styles(self):
         theme = self.get_theme()
-        if text in ['+', '-', '*', '/', '=']:
-            button.config(
-                style="Op.TButton",
-                background=theme["op_color"],
-                foreground="white",
-                activebackground=theme["op_active"]
-            )
-        elif text in ['A', 'B', 'C', 'D', 'E', 'F', '<<', '>>', '(', ')', '%', '±']:
-            button.config(
-                style="Special.TButton",
-                background=theme["special_bg"],
-                foreground=theme["special_fg"],
-                activebackground=theme["special_active"]
-            )
-        else:
-            button.config(
-                style="Normal.TButton",
-                background=theme["button_bg"],
-                foreground=theme["button_fg"],
-                activebackground=theme["button_active"]
-            )
+        self.style.configure("Custom.TFrame", background=theme["bg"])
+        self.style.configure("Custom.TLabel", background=theme["bg"], foreground=theme["fg"])
+        self.style.configure("Custom.TButton", background=theme["button_bg"], foreground=theme["button_fg"])
+        print("Styles configured for theme")
